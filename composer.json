@@ -1,11 +1,11 @@
 {
-  "name": "deploykit/telegraph-api",
+  "name": "p7v/telegraph-api",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "Alexey Plekhanov",
-      "email": "alex@deploykit.co"
+      "name": "Alex Plekhanov",
+      "email": "alex@p7v.app"
     }
   ],
   "minimum-stability": "stable",
@@ -16,5 +16,8 @@
     "psr-4": {
       "Deploykit\\Telegraph\\": "src/"
     }
+  },
+  "replace": {
+    "deploykit/telegraph-api": "*"
   }
 }

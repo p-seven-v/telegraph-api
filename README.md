@@ -1,9 +1,7 @@
 # Telegra.ph API for PHP
 
-[![Packagist](https://img.shields.io/packagist/v/deploykit/telegraph-api.svg)](https://packagist.org/packages/deploykit/telegraph-api)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
-[![StyleCI](https://styleci.io/repos/76974544/shield?branch=master&style=flat)](https://styleci.io/repos/76974544)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/deploykit/telegraph-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/deploykit/telegraph-api/?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/p7v/telegraph-api.svg)](https://packagist.org/packages/p7v/telegraph-api)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
 This package lets you work with [telegra.ph](http://telegra.ph) API.
 
@@ -17,12 +15,19 @@ This package lets you work with [telegra.ph](http://telegra.ph) API.
 - [Credits](#credits)
 - [License](#license)
 
+## Disclaimer
+
+^1.0 version here is a copy of deploykit/telegraph-api project. That package is discontinued in favor of this one.
+This package replaces that one, and for backward compatibility it even contains legacy namespace.
+
+^2.0 will have it changed to correspond to vendor name - P7V.
+
 ## Installation
 
 To get the latest version of Telegra.ph API client simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require deploykit/telegraph-api
+$ composer require p7v/telegraph-api
 ```
 
 Or you can manually update your require block and run `composer update` if you choose so:
@@ -30,7 +35,7 @@ Or you can manually update your require block and run `composer update` if you c
 ```json
 {
     "require": {
-        "deploykit/telegraph-api": "~1.1.0"
+        "p7v/telegraph-api": "^1.0"
     }
 }
 ```
@@ -53,7 +58,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 
 ## Roadmap
 
-All future features are documented in [Roadmap GitHub project](https://github.com/deploykit/telegraph-api/projects/1).
+All future features are documented in [Roadmap GitHub project](https://github.com/p7v/telegraph-api/projects/1).
 
 ## Contributing
 
