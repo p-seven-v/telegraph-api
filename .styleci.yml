@@ -1,5 +1,4 @@
-preset: psr-2
+preset: psr-12
 
 enabled:
-  - length_ordered_imports
   - no_unused_imports
