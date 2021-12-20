@@ -1,5 +1,7 @@
 {
   "name": "p7v/telegraph-api",
+  "description": "Telegra.ph API client",
+  "keywords": ["telegraph", "telegra.ph", "telegram"],
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -8,7 +10,6 @@
       "email": "alex@p7v.app"
     }
   ],
-  "minimum-stability": "stable",
   "require": {
     "guzzlehttp/guzzle": "^6.2"
   },
@@ -19,5 +20,9 @@
   },
   "replace": {
     "deploykit/telegraph-api": "*"
+  },
+  "minimum-stability": "stable",
+  "config": {
+    "sort-packages": true
   }
 }
