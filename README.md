@@ -44,7 +44,7 @@ Or you can manually update your require block and run `composer update` if you c
 All methods in Telegraph Client class correspond to API methods that are described in [Telegraph API documentation](http://telegra.ph/api).
 
 ```php
-$telegraph = new \Deploykit\Telegraph\Client();
+$telegraph = new \P7v\TelegraphApi\Client();
 
 $telegraph->createAccount('Author', 'Author name', 'http://example.com');
 ```

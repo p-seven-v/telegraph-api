@@ -1,26 +1,27 @@
 <?php
 
-namespace Deploykit\Telegraph;
+namespace P7v\TelegraphApi;
 
-use Deploykit\Telegraph\Entities\Page;
+use P7v\TelegraphApi\Entities\Page;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
-use Deploykit\Telegraph\Entities\Account;
-use Deploykit\Telegraph\Entities\PageList;
-use Deploykit\Telegraph\Entities\PageViews;
-use Deploykit\Telegraph\Exceptions\TelegraphApiException;
+use P7v\TelegraphApi\Entities\Account;
+use P7v\TelegraphApi\Entities\PageList;
+use P7v\TelegraphApi\Entities\PageViews;
+use P7v\TelegraphApi\Exceptions\TelegraphApiException;
 
 class Client
 {
-    protected $url = 'https://api.telegra.ph/';
+    private string $url = 'https://api.telegra.ph/';
 
-    protected $http;
+    private GuzzleClient $http;
 
-    public function __construct($httpClient = null)
+    public function __construct()
     {
-        $this->http = $httpClient ?: new \GuzzleHttp\Client(['base_uri' => $this->url]);
+        $this->http = new GuzzleClient(['base_uri' => $this->url]);
     }
 
-    public function createAccount($shortName, $authorName = '', $authorUrl = '')
+    public function createAccount(string $shortName, string $authorName = '', string $authorUrl = '')
     {
         $response = $this->http->post('/createAccount', [
             'json' => [
@@ -150,7 +151,7 @@ class Client
     }
 
     /**
-     * @param  \Deploykit\Telegraph\Entities\Account|string  $account
+     * @param  \P7v\TelegraphApi\Entities\Account|string  $account
      * @return  mixed
      */
     protected function getAccessToken($account)

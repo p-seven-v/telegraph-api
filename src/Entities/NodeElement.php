@@ -1,6 +1,6 @@
 <?php
 
-namespace Deploykit\Telegraph\Entities;
+namespace P7v\TelegraphApi\Entities;
 
 class NodeElement extends BaseEntity
 {

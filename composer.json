@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Deploykit\\Telegraph\\": "src/"
+      "P7v\\TelegraphApi\\": "src/"
     }
   },
   "replace": {
