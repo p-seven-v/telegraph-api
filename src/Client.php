@@ -4,50 +4,52 @@ declare(strict_types=1);
 
 namespace P7v\TelegraphApi;
 
-use P7v\TelegraphApi\Entities\Page;
 use GuzzleHttp\Client as GuzzleClient;
-use Psr\Http\Message\ResponseInterface;
+use JsonException;
+use P7v\TelegraphApi\Domain\Requests\CreateAccountRequest;
 use P7v\TelegraphApi\Entities\Account;
+use P7v\TelegraphApi\Entities\Page;
 use P7v\TelegraphApi\Entities\PageList;
 use P7v\TelegraphApi\Entities\PageViews;
 use P7v\TelegraphApi\Exceptions\TelegraphApiException;
+use P7v\TelegraphApi\Mapper\RequestMapper;
+use Psr\Http\Message\ResponseInterface;
 
-class Client
+final class Client
 {
     private string $url = 'https://api.telegra.ph/';
 
-    private GuzzleClient $http;
+    private GuzzleClient $httpClient;
+
+    private RequestMapper $requestMapper;
 
     public function __construct()
     {
-        $this->http = new GuzzleClient(['base_uri' => $this->url]);
+        $this->httpClient = new GuzzleClient(['base_uri' => $this->url]);
+        $this->requestMapper = new RequestMapper();
     }
 
-    public function createAccount(string $shortName, string $authorName = '', string $authorUrl = '')
+    public function createAccount(CreateAccountRequest $request): Account
     {
-        $response = $this->http->post('/createAccount', [
-            'json' => [
-                'short_name' => $shortName,
-                'author_name' => $authorName,
-                'author_url' => $authorUrl
-            ]
+        $response = $this->httpClient->post('createAccount', [
+            'json' => $this->requestMapper->mapCreateAccountRequest($request),
         ]);
 
-        return new Account($this->handleResponse($response));
+        return Account::fromApiResponse($this->handleResponse($response));
     }
 
     public function editAccountInfo($account, $shortName = '', $authorName = '', $authorUrl = '')
     {
-        $response = $this->http->post('/editAccountInfo', [
+        $response = $this->httpClient->post('/editAccountInfo', [
             'json' => [
                 'access_token' => $this->getAccessToken($account),
                 'short_name' => $shortName,
                 'author_name' => $authorName,
-                'author_url' => $authorUrl
-            ]
+                'author_url' => $authorUrl,
+            ],
         ]);
 
-        return new Account($this->handleResponse($response));
+        return Account::fromApiResponse($this->handleResponse($response));
     }
 
     public function getAccountInfo($account, $fields = ['short_name', 'author_name', 'author_url'])
@@ -60,11 +62,11 @@ class Client
             }
         }
 
-        $response = $this->http->post('/getAccountInfo', [
+        $response = $this->httpClient->post('/getAccountInfo', [
             'json' => [
                 'access_token' => $this->getAccessToken($account),
-                'fields' => $fields
-            ]
+                'fields' => $fields,
+            ],
         ]);
 
         return new Account($this->handleResponse($response));
@@ -72,10 +74,10 @@ class Client
 
     public function revokeAccessToken($account)
     {
-        $response = $this->http->post('/revokeAccessToken', [
+        $response = $this->httpClient->post('/revokeAccessToken', [
             'json' => [
-                'access_token' => $this->getAccessToken($account)
-            ]
+                'access_token' => $this->getAccessToken($account),
+            ],
         ]);
 
         return new Account($this->handleResponse($response));
@@ -83,34 +85,41 @@ class Client
 
     public function createPage($account, $title, $content, $authorName = '', $authorUrl = '', $returnContent = false)
     {
-        $response = $this->http->post('/createPage', [
+        $response = $this->httpClient->post('/createPage', [
             'json' => [
                 'access_token' => $this->getAccessToken($account),
                 'title' => $title,
                 'content' => $content,
                 'author_name' => $authorName,
                 'author_url' => $authorUrl,
-                'return_content' => $returnContent
-            ]
+                'return_content' => $returnContent,
+            ],
         ]);
 
         return new Page($this->handleResponse($response));
     }
 
-    public function editPage($account, $path, $title, $content, $authorName = null, $authorUrl = null, $returnContent = false)
-    {
+    public function editPage(
+        $account,
+        $path,
+        $title,
+        $content,
+        $authorName = null,
+        $authorUrl = null,
+        $returnContent = false
+    ) {
         $json = array_filter([
-            'access_token' => $this->getAccessToken($account),
-            'path' => $path,
-            'title' => $title,
-            'content' => $content,
-            'author_name' => $authorName,
-            'author_url' => $authorUrl,
-            'return_content' => $returnContent
-        ]);
+                                 'access_token' => $this->getAccessToken($account),
+                                 'path' => $path,
+                                 'title' => $title,
+                                 'content' => $content,
+                                 'author_name' => $authorName,
+                                 'author_url' => $authorUrl,
+                                 'return_content' => $returnContent,
+                             ]);
 
-        $response = $this->http->post('/editPage', [
-            'json' => $json
+        $response = $this->httpClient->post('/editPage', [
+            'json' => $json,
         ]);
 
         return new Page($this->handleResponse($response));
@@ -118,11 +127,11 @@ class Client
 
     public function getPage($path, $returnContent = false)
     {
-        $response = $this->http->post('/getPage', [
+        $response = $this->httpClient->post('/getPage', [
             'json' => [
                 'path' => $path,
-                'return_content' => $returnContent
-            ]
+                'return_content' => $returnContent,
+            ],
         ]);
 
         return new Page($this->handleResponse($response));
@@ -130,12 +139,12 @@ class Client
 
     public function getPageList($account, $offset = 0, $limit = 50)
     {
-        $response = $this->http->post('/getPageList', [
+        $response = $this->httpClient->post('/getPageList', [
             'json' => [
                 'access_token' => $this->getAccessToken($account),
                 'offset' => $offset,
-                'limit' => $limit
-            ]
+                'limit' => $limit,
+            ],
         ]);
 
         return new PageList($this->handleResponse($response));
@@ -145,15 +154,15 @@ class Client
     {
         $json = array_filter(compact('path', 'year', 'month', 'day', 'hour'));
 
-        $response = $this->http->post('/getViews', [
-            'json' => $json
+        $response = $this->httpClient->post('/getViews', [
+            'json' => $json,
         ]);
 
         return new PageViews($this->handleResponse($response));
     }
 
     /**
-     * @param  \P7v\TelegraphApi\Entities\Account|string  $account
+     * @param \P7v\TelegraphApi\Entities\Account|string $account
      * @return  mixed
      */
     protected function getAccessToken($account)
@@ -166,15 +175,26 @@ class Client
     }
 
     /**
-     * @param  \Psr\Http\Message\ResponseInterface  $response
-     * @return  array  mixed
+     * @param ResponseInterface $response
+     *
+     * @return array<string, mixed>
+     *
+     * @throws TelegraphApiException
      */
-    protected function handleResponse(ResponseInterface $response)
+    protected function handleResponse(ResponseInterface $response): array
     {
-        $response = json_decode($response->getBody()->getContents(), true);
+        try {
+            $response = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            throw new TelegraphApiException('Invalid response from Telegra.ph API', 0, $exception);
+        }
 
         if (!$response['ok']) {
             throw new TelegraphApiException($response['error']);
+        }
+
+        if (!is_array($response['result'])) {
+            throw new TelegraphApiException('Result in response is of unexpected format');
         }
 
         return $response['result'];
