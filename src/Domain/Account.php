@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace P7v\TelegraphApi\Entities;
-
-use P7v\TelegraphApi\Domain\AccessToken;
+namespace P7v\TelegraphApi\Domain;
 
 final class Account
 {
