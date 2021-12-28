@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace P7v\TelegraphApi\Domain;
 
-use Assert\Assert;
-use Assert\InvalidArgumentException;
+use Assert\Assertion;
+use Assert\AssertionFailedException;
 
 final class AccessToken
 {
@@ -13,11 +13,11 @@ final class AccessToken
     private string $token;
 
     /**
-     * @throws InvalidArgumentException
+     * @throws AssertionFailedException
      */
     public function __construct(string $token)
     {
-        Assert::that($token)->notEmpty();
+        Assertion::notEmpty($token);
 
         $this->token = $token;
     }
