@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace P7v\TelegraphApi\Domain\Requests;
 
-use Assert\Assert;
+use Assert\Assertion;
 use P7v\TelegraphApi\Domain\AccessToken;
 
 final class EditAccountRequest implements RequestInterface
@@ -24,11 +24,10 @@ final class EditAccountRequest implements RequestInterface
         string $authorName = '',
         string $authorUrl = ''
     ) {
-        Assert::lazy()
-            ->that($shortName)->notEmpty()->maxLength(32)
-            ->that($authorName)->maxLength(128)
-            ->that($authorUrl)->maxLength(512)
-            ->verifyNow();
+        Assertion::notEmpty($shortName);
+        Assertion::maxLength($shortName, 32);
+        Assertion::maxLength($authorName, 128);
+        Assertion::maxLength($authorUrl, 512);
 
         $this->accessToken = $accessToken;
         $this->shortName = $shortName;
