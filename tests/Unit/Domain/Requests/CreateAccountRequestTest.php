@@ -54,12 +54,41 @@ class CreateAccountRequestTest extends TestCase
         new CreateAccountRequest($shortName, $authorName, $authorUrl);
     }
 
+    /**
+     * @test
+     *
+     * @dataProvider argumentsForJsonDataProvider
+     */
+    public function it_provides_proper_array_for_json(string $shortName, string $authorName, string $authorUrl): void
+    {
+        $sut = new CreateAccountRequest($shortName, $authorName, $authorUrl);
+
+        $this->assertEquals(
+            array_filter(
+                [
+                    'short_name' => $shortName,
+                    'author_name' => $authorName,
+                    'author_url' => $authorUrl,
+                ]
+            ),
+            $sut->getJson(),
+        );
+    }
+
     public function invalidArgumentsDataProvider(): iterable
     {
         yield 'empty short name' => ['', '', ''];
         yield 'short name is too long' => [$this->getRandomString(33), '', ''];
         yield 'author name is too long' => ['a', $this->getRandomString(129), ''];
         yield 'author url is too long' => ['a', 'b', $this->getRandomString(513)];
+    }
+
+    public function argumentsForJsonDataProvider(): iterable
+    {
+        yield 'only short name' => ['short', '', ''];
+        yield 'short name and author name' => ['short', 'author', ''];
+        yield 'short name and author url' => ['short', '', 'url'];
+        yield 'all three' => ['short', 'author', 'url'];
     }
 
     private function getRandomString(int $length): string
