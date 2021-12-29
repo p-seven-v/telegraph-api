@@ -18,8 +18,7 @@ final class Account
 
     private ?int $pageCount;
 
-    // @TODO make private
-    public function __construct(
+    private function __construct(
         ?string $shortName,
         ?string $authorName,
         ?string $authorUrl,
