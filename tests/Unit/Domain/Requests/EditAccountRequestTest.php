@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Requests;
 
-use Assert\InvalidArgumentException;
+use InvalidArgumentException;
 use P7v\TelegraphApi\Domain\AccessToken;
 use P7v\TelegraphApi\Domain\Requests\EditAccountRequest;
 use PHPUnit\Framework\TestCase;
@@ -14,49 +14,108 @@ use PHPUnit\Framework\TestCase;
  */
 class EditAccountRequestTest extends TestCase
 {
-    /** @test */
-    public function it_can_be_created(): void
-    {
-        $accessToken = new AccessToken('abcdef');
+    private const TOKEN = 'abc';
 
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa')
+    private EditAccountRequest $sut;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->sut = new EditAccountRequest(
+            new AccessToken(self::TOKEN),
         );
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa', 'bbb')
-        );
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa', 'bbb', 'ccc')
-        );
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa', '', 'ccc')
-        );
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa', 'bbb', '')
-        );
-        $this->assertInstanceOf(
-            EditAccountRequest::class,
-            new EditAccountRequest($accessToken, 'aaa', '', '')
+    }
+
+    /** @test */
+    public function it_can_have_short_name_specified(): void
+    {
+        $sut = $this->sut->withShortName('short');
+
+        $this->assertNotSame($this->sut, $sut);
+        $this->assertEquals(
+            [
+                'access_token' => self::TOKEN,
+                'short_name' => 'short',
+            ],
+            $sut->getJson(),
         );
     }
 
     /**
      * @test
      *
-     * @dataProvider invalidArgumentsDataProvider
+     * @dataProvider invalidShortNamesDataProvider
      */
-    public function it_is_not_created_when_arguments_are_invalid(string $shortName, string $authorName, string $authorUrl): void
+    public function it_does_not_accept_invalid_short_names(string $shortName): void
     {
-        $accessToken = new AccessToken('abcdef');
-
         $this->expectException(InvalidArgumentException::class);
 
-        new EditAccountRequest($accessToken, $shortName, $authorName, $authorUrl);
+        $this->sut->withShortName($shortName);
+    }
+
+    /** @test */
+    public function it_can_have_author_name_specified(): void
+    {
+        $sut = $this->sut->withAuthorName('author');
+
+        $this->assertNotSame($this->sut, $sut);
+        $this->assertEquals(
+            [
+                'access_token' => self::TOKEN,
+                'author_name' => 'author',
+            ],
+            $sut->getJson(),
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider invalidAuthorNamesDataProvider
+     */
+    public function it_does_not_accept_invalid_author_names(string $authorName): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->sut->withAuthorName($authorName);
+    }
+
+    /** @test */
+    public function it_can_have_author_url_specified(): void
+    {
+        $sut = $this->sut->withAuthorUrl('url');
+
+        $this->assertNotSame($this->sut, $sut);
+        $this->assertEquals(
+            [
+                'access_token' => self::TOKEN,
+                'author_url' => 'url',
+            ],
+            $sut->getJson(),
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider invalidAuthorUrlsDataProvider
+     */
+    public function it_does_not_accept_invalid_author_urls(string $authorName): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->sut->withAuthorUrl($authorName);
+    }
+
+    /** @test */
+    public function it_can_be_empty(): void
+    {
+        $sut = new EditAccountRequest(
+            new AccessToken('abc')
+        );
+
+        $this->assertTrue($sut->isEmpty());
     }
 
     /**
@@ -66,12 +125,20 @@ class EditAccountRequestTest extends TestCase
      */
     public function it_provides_proper_array_for_json(string $shortName, string $authorName, string $authorUrl): void
     {
-        $accessToken = new AccessToken('abcdef');
+        $sut = $this->sut;
 
-        $sut = new EditAccountRequest($accessToken, $shortName, $authorName, $authorUrl);
+        if ($shortName !== '') {
+            $sut = $sut->withShortName($shortName);
+        }
+        if ($authorName !== '') {
+            $sut = $sut->withAuthorName($authorName);
+        }
+        if ($authorUrl !== '') {
+            $sut = $sut->withAuthorUrl($authorUrl);
+        }
 
         $this->assertEquals(
-            ['access_token' => $accessToken->getValue()]
+            ['access_token' => self::TOKEN]
             + array_filter(
                 [
                     'short_name' => $shortName,
@@ -83,17 +150,29 @@ class EditAccountRequestTest extends TestCase
         );
     }
 
-    public function invalidArgumentsDataProvider(): iterable
+    public function invalidShortNamesDataProvider(): iterable
     {
-        yield 'empty short name' => ['', '', ''];
-        yield 'short name is too long' => [$this->getRandomString(33), '', ''];
-        yield 'author name is too long' => ['a', $this->getRandomString(129), ''];
-        yield 'author url is too long' => ['a', 'b', $this->getRandomString(513)];
+        yield 'empty short name' => [''];
+        yield 'too long short name' => [$this->getRandomString(33)];
+    }
+
+    public function invalidAuthorNamesDataProvider(): iterable
+    {
+        yield 'empty short name' => [''];
+        yield 'too long short name' => [$this->getRandomString(129)];
+    }
+
+    public function invalidAuthorUrlsDataProvider(): iterable
+    {
+        yield 'empty short name' => [''];
+        yield 'too long short name' => [$this->getRandomString(513)];
     }
 
     public function argumentsForJsonDataProvider(): iterable
     {
         yield 'only short name' => ['short', '', ''];
+        yield 'only author name' => ['', 'author', ''];
+        yield 'only author url' => ['', '', 'url'];
         yield 'short name and author name' => ['short', 'author', ''];
         yield 'short name and author url' => ['short', '', 'url'];
         yield 'all three' => ['short', 'author', 'url'];

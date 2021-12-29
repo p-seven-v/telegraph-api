@@ -4,48 +4,71 @@ declare(strict_types=1);
 
 namespace P7v\TelegraphApi\Domain\Requests;
 
-use Assert\Assertion;
-use Assert\AssertionFailedException;
+use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-immutable
+ */
 final class CreateAccountRequest implements RequestInterface
 {
     /** @var non-empty-string */
     private string $shortName;
 
-    private string $authorName;
+    /** @var non-empty-string|null */
+    private ?string $authorName = null;
 
-    private string $authorUrl;
+    /** @var non-empty-string|null */
+    private ?string $authorUrl = null;
 
-    /**
-     * @throws AssertionFailedException
-     */
-    public function __construct(string $shortName, string $authorName = '', string $authorUrl = '')
+    public function __construct(string $shortName)
     {
-        Assertion::notEmpty($shortName);
-        Assertion::maxLength($shortName, 32);
-        Assertion::maxLength($authorName, 128);
-        Assertion::maxLength($authorUrl, 512);
+        Assert::stringNotEmpty($shortName);
+        Assert::maxLength($shortName, 32);
 
         $this->shortName = $shortName;
-        $this->authorName = $authorName;
-        $this->authorUrl = $authorUrl;
+    }
+
+    public function withAuthorName(string $authorName): self
+    {
+        Assert::stringNotEmpty($authorName);
+        Assert::maxLength($authorName, 128);
+
+        $request = clone $this;
+
+        $request->authorName = $authorName;
+
+        return $request;
+    }
+
+    public function withAuthorUrl(string $authorUrl): self
+    {
+        Assert::stringNotEmpty($authorUrl);
+        Assert::maxLength($authorUrl, 512);
+
+        $request = clone $this;
+
+        $request->authorUrl = $authorUrl;
+
+        return $request;
     }
 
     /**
-     * @return array{short_name: non-empty-string, author_name?: string, author_url?: string}
+     * @return array{short_name: non-empty-string, author_name?: non-empty-string, author_url?: non-empty-string}
      */
     public function getJson(): array
     {
-        return array_merge(
-            [
-                'short_name' => $this->shortName,
-            ],
-            array_filter(
-                [
-                    'author_name' => $this->authorName,
-                    'author_url' => $this->authorUrl,
-                ]
-            )
-        );
+        $json = [
+            'short_name' => $this->shortName,
+        ];
+
+        if (!is_null($this->authorName)) {
+            $json['author_name'] = $this->authorName;
+        }
+
+        if (!is_null($this->authorUrl)) {
+            $json['author_url'] = $this->authorUrl;
+        }
+
+        return $json;
     }
 }
