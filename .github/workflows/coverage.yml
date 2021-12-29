@@ -1,34 +1,35 @@
-name: Unit test coverage
+name: Unit tests coverage
 
 on:
   - push
   - pull_request
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    name: Unit test coverage
+  coverage:
+    name: "Unit tests coverage"
+
+    runs-on: "ubuntu-latest"
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: "Setup PHP"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: 8.0
-          tools: composer:v2
-          coverage: pcov
+          php-version: "8.0"
+          tools: "composer:v2"
+          coverage: "pcov"
 
-      - name: Composer install
-        uses: ramsey/composer-install@v2
+      - name: "Composer install"
+        uses: "ramsey/composer-install@v2"
         with:
-          dependency-versions: locked
+          dependency-versions: "locked"
 
-      - name: Execute tests
-        run: vendor/bin/phpunit --coverage-clover=clover.xml
+      - name: "Execute tests"
+        run: "vendor/bin/phpunit --coverage-clover=clover.xml"
 
-      - name: Send coverage report
-        uses: codecov/codecov-action@v2
+      - name: "Send coverage report"
+        uses: "codecov/codecov-action@v2"
         with:
-          files: ./clover.xml
+          files: "./clover.xml"
