@@ -18,7 +18,7 @@ class AccessTokenTest extends TestCase
     {
         $this->assertInstanceOf(
             AccessToken::class,
-            new AccessToken('token')
+            new AccessToken('token'),
         );
     }
 
