@@ -15,9 +15,6 @@ final class GetAccountInfoRequest implements RequestInterface
         $this->accessToken = $accessToken;
     }
 
-    /**
-     * @return array{access_token: non-empty-string}
-     */
     public function getJson(): array
     {
         return [
