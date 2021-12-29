@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain;
 
-use Assert\InvalidArgumentException;
+use InvalidArgumentException;
 use P7v\TelegraphApi\Domain\AccessToken;
 use PHPUnit\Framework\TestCase;
 

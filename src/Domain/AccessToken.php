@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace P7v\TelegraphApi\Domain;
 
-use Assert\Assertion;
-use Assert\AssertionFailedException;
+use Webmozart\Assert\Assert;
 
 final class AccessToken
 {
     /** @var non-empty-string */
     private string $token;
 
-    /**
-     * @throws AssertionFailedException
-     */
     public function __construct(string $token)
     {
-        Assertion::notEmpty($token);
+        Assert::notEmpty($token);
 
         $this->token = $token;
     }
