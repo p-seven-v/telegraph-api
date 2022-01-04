@@ -13,7 +13,7 @@ final class AccessToken
 
     public function __construct(string $token)
     {
-        Assert::notEmpty($token);
+        Assert::stringNotEmpty($token);
 
         $this->token = $token;
     }
