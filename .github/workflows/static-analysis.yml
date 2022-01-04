@@ -37,3 +37,36 @@ jobs:
 
       - name: "Run psalm"
         run: "vendor/bin/psalm --output-format=github"
+
+  static-analysis-phpstan:
+    name: "Static Analysis by PHPStan, PHP ${{ matrix.php }} - ${{ matrix.dependencies }}"
+
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        php:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+        dependencies:
+          - "locked"
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
+
+      - name: "Setup PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php }}"
+          tools: "composer:v2"
+          coverage: "none"
+
+      - name: "Composer install"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+
+      - name: "Run phpstan"
+        run: "vendor/bin/phpstan analyse --error-format=github"
