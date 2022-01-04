@@ -20,7 +20,7 @@ This package lets you work with [telegra.ph](http://telegra.ph) API.
 ^1.0 version here is a copy of deploykit/telegraph-api project. That package is discontinued in favor of this one.
 This package replaces that one, and for backward compatibility it even contains legacy namespace.
 
-^2.0 will have it changed to correspond to vendor name - P7V.
+^2.0 is a completely reworked client.
 
 ## Installation
 
@@ -35,7 +35,7 @@ Or you can manually update your require block and run `composer update` if you c
 ```json
 {
     "require": {
-        "p7v/telegraph-api": "^1.0"
+        "p7v/telegraph-api": "^2.0"
     }
 }
 ```
@@ -48,9 +48,6 @@ $telegraph = new \P7v\TelegraphApi\Client();
 
 $telegraph->createAccount('Author', 'Author name', 'http://example.com');
 ```
-
-All entities' classes implement ArrayAccess, so any property of any class can be accessed either in object style or in array style.
-For all methods that require `access_token`, you can either provide a string with your token or provide instance of `\Deploykit\Telegraph\Entities\Account` class.
 
 ## Changelog
 
