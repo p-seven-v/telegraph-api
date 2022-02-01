@@ -1,7 +1,7 @@
 # Telegra.ph API for PHP
 
 [![Packagist](https://img.shields.io/packagist/v/p7v/telegraph-api.svg)](https://packagist.org/packages/p7v/telegraph-api)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 
 This package lets you work with [telegra.ph](http://telegra.ph) API.
 
@@ -41,12 +41,15 @@ Or you can manually update your require block and run `composer update` if you c
 ```
 
 ## Usage
-All methods in Telegraph Client class correspond to API methods that are described in [Telegraph API documentation](http://telegra.ph/api).
+All methods in Telegraph Client class correspond to API methods that are described in [Telegraph API documentation](http://telegra.ph/api). Each method would accept its own request object.
 
 ```php
 $telegraph = new \P7v\TelegraphApi\Client();
 
-$telegraph->createAccount('Author', 'Author name', 'http://example.com');
+$request = new CreateAccountRequest('short-name');
+$request = $request->withAuthorName('author-name')->withAuthorUrl('https://example.com');
+
+$telegraph->createAccount($request);
 ```
 
 ## Changelog
